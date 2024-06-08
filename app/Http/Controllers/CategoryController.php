@@ -7,7 +7,6 @@ use App\Http\Requests\updateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 
-
 class CategoryController extends Controller
 {
     public function index()
@@ -15,23 +14,24 @@ class CategoryController extends Controller
         return CategoryResource::collection(Category::all());
     }
 
-    public function store(storeCategoryRequest $request, CategoryResource $categoryResource)
+    public function store(storeCategoryRequest $request)
     {
         $category = Category::create($request->validated());
-        return $categoryResource->make($category);
+        return new CategoryResource($category);
     }
 
-    public function show(int $id, CategoryResource $categoryResource)
+    public function show(int $id)
     {
         $category = Category::findOrFail($id);
-        return $categoryResource->make($category);
+        return new CategoryResource($category);
     }
 
-    public function update(updateCategoryRequest $request, int $id, CategoryResource $categoryResource)
+    public function update(updateCategoryRequest $request, int $id)
     {
         $validated = $request->validated();
-        $category = Category::findOrFail($id)->update($validated);
-        return $categoryResource->make($category>refresh());
+        $category = Category::findOrFail($id);
+        $category->update($validated);
+        return new CategoryResource($category->refresh());
     }
 
     public function destroy(int $id)

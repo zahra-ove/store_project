@@ -1,30 +1,45 @@
-#============== Users
+drop database store;
+create database store character set utf8 collate utf8
+
+
+
+-- ============== Users
+DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (
                                      id INT AUTO_INCREMENT PRIMARY KEY,
                                      first_name VARCHAR(255),
     last_name VARCHAR(255),
     username VARCHAR(255),
     `password` VARCHAR(255),
+    remember_token VARCHAR(100),
     mobile VARCHAR(30),
     email VARCHAR(255),
     email_verified_at TIMESTAMP NULL DEFAULT NULL,
+
     created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL DEFAULT NULL,
     deleted_at TIMESTAMP NULL DEFAULT NULL
     );
 
 
-#============== Categories
+-- ============== Categories
+DROP TABLE IF EXISTS categories;
 CREATE TABLE IF NOT EXISTS categories (
                                           id INT AUTO_INCREMENT PRIMARY KEY,
                                           `name` VARCHAR(255) NOT NULL,
+    category_id int,
+
     created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL DEFAULT NULL,
-    deleted_at TIMESTAMP NULL DEFAULT NULL
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
+
+    index categories_categoryid_idx (category_id),
+    FOREIGN KEY (category_id) REFERENCES categories(id)
     );
 
 
-#============== Products
+-- ============== Products
+DROP TABLE IF EXISTS products;
 CREATE TABLE IF NOT EXISTS products (
                                         id INT AUTO_INCREMENT PRIMARY KEY,
                                         `name` VARCHAR(255) NOT NULL,
@@ -45,7 +60,8 @@ CREATE TABLE IF NOT EXISTS products (
     );
 
 
-#============== Attribute
+-- ============== Attribute
+DROP TABLE IF EXISTS attributes;
 CREATE TABLE IF NOT EXISTS attributes (
                                           id INT AUTO_INCREMENT PRIMARY KEY,
                                           `name` VARCHAR(255) NOT NULL,
@@ -56,7 +72,8 @@ CREATE TABLE IF NOT EXISTS attributes (
 
 
 
-#============== Attribute Category
+-- ============== Attribute Category
+DROP TABLE IF EXISTS attribute_category;
 CREATE TABLE IF NOT EXISTS attribute_category (
                                                   id INT AUTO_INCREMENT PRIMARY KEY,
                                                   attribute_id int,
@@ -72,7 +89,8 @@ CREATE TABLE IF NOT EXISTS attribute_category (
     );
 
 
-#============== Product Attribute Values
+-- ============== Product Attribute Values
+DROP TABLE IF EXISTS productattribute_values;
 CREATE TABLE IF NOT EXISTS productattribute_values (
                                                        id INT AUTO_INCREMENT PRIMARY KEY,
                                                        product_id int,
@@ -86,7 +104,8 @@ CREATE TABLE IF NOT EXISTS productattribute_values (
     );
 
 
-#============== Taggable
+-- ============== Taggable
+DROP TABLE IF EXISTS taggables;
 CREATE TABLE IF NOT EXISTS taggables (
                                          id INT AUTO_INCREMENT PRIMARY KEY,
                                          tag_id int,
@@ -99,7 +118,8 @@ CREATE TABLE IF NOT EXISTS taggables (
     );
 
 
-#============== Tickets
+-- ============== Tickets
+DROP TABLE IF EXISTS tickets;
 CREATE TABLE IF NOT EXISTS tickets (
                                        id int AUTO_INCREMENT PRIMARY KEY,
                                        title varchar(500),
@@ -122,7 +142,8 @@ CREATE TABLE IF NOT EXISTS tickets (
     );
 
 
-#============== Images
+-- ============== Images
+DROP TABLE IF EXISTS images;
 CREATE TABLE IF NOT EXISTS images (
                                       id INT AUTO_INCREMENT PRIMARY KEY,
                                       original_name VARCHAR(255),
@@ -142,4 +163,35 @@ CREATE TABLE IF NOT EXISTS images (
     index images_imagabletype_idx (imagable_type)
     );
 
+-- ============== Personal_access_tokens
+DROP TABLE IF EXISTS personal_access_tokens;
+CREATE TABLE `personal_access_tokens` (
+                                          `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+                                          `tokenable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                                          `tokenable_id` bigint unsigned NOT NULL,
+                                          `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                                          `token` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+                                          `abilities` text COLLATE utf8mb4_unicode_ci,
+                                          `last_used_at` timestamp NULL DEFAULT NULL,
+                                          `expires_at` timestamp NULL DEFAULT NULL,
+                                          `created_at` timestamp NULL DEFAULT NULL,
+                                          `updated_at` timestamp NULL DEFAULT NULL,
+                                          PRIMARY KEY (`id`),
+                                          UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
+                                          KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
+);
 
+
+-- ============== Password_reset_tokens
+DROP TABLE IF EXISTS password_reset_tokens;
+CREATE TABLE `password_reset_tokens` (
+                                         `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                                         `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                                         `created_at` timestamp NULL DEFAULT NULL,
+                                         PRIMARY KEY (`email`)
+);
+
+
+
+
+set foreign_key_checks=1;
